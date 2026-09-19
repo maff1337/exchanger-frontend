@@ -1,32 +1,35 @@
+import { getCurrencies } from "../utils/api-requests.js";
 import { createCurrencyOptions } from "../utils/currency-options.js";
 import { setupRateSelects } from "../utils/select-utils.js";
 
-export function showAdd(content: HTMLElement | null): void {
+export async function showAdd(content: HTMLElement | null): Promise<void> {
     if (content === null) {
         throw new Error("Content element not found");
     }
 
+    const currencies = await getCurrencies();
+
     content.innerHTML = `
-    <h1>ADD</h1>
+    <h1>Add new</h1>
 
-    <section>
-        <h2>Add currency</h2>
+    <section class="add-block">
+        <h2>Currency</h2>
 
-        <form id="add-currency-from">
-            <label>
-                Code
-                <input type="text" name="code" required /> 
-            </label>
+        <form id="add-currency-form" class="compact-form">
+            <div class="field">
+                <input type="text" id="add-code" name="code" placeholder=" " required>
+                <label for="add-code">Code</label>
+            </div>  
 
-            <label>
-                Name
-                <input type="text" name="name" required /> 
-            </label>
+            <div class="field">
+                <input type="text" id="add-name" name="name" placeholder=" " required>
+                <label for="add-name">Name</label>
+            </div>
 
-            <label>
-                Sign
-                <input type="text" name="sign" required /> 
-            </label>
+            <div class="field">
+                <input type="text" id="add-sign" name="sign" placeholder=" " required>
+                <label for="add-sign">Sign</label>
+            </div>
 
             <button type="submit">
                 Add
@@ -34,35 +37,33 @@ export function showAdd(content: HTMLElement | null): void {
         </form>
     </section>
 
-    <section>
-        <h2>Add rate</h2>
+    <section class="add-block">
+        <h2>Exchange rate</h2>
 
-        <form id="add-rate-form">
+        <form id="add-rate-form" class="compact-form">
             <label>
                 From
-                <select id="from-currency" name="baseCurrency" requied>
+                <select id="from-currency" name="baseCurrency" required>
                     <option value="" selected hidden>
                         Select
                     </option>
-
-                    ${createCurrencyOptions()}
+                    ${createCurrencyOptions(currencies)}
                 </select>
             </label>
 
             <label>
-                to
-                <select id="to-currency" name="targetCurrency" requied>
+                To
+                <select id="to-currency" name="targetCurrency" required>
                     <option value="" selected hidden>
                         Select
                     </option>
-                    
-                    ${createCurrencyOptions()}
+                    ${createCurrencyOptions(currencies)}
                 </select>
             </label>
 
             <label>
                 Rate
-                <input type="number" name="rate" step="any" min="0" required />
+                <input type="number" name="rate" step="any" min="0" required>
             </label>
 
             <button type="submit">
@@ -70,7 +71,7 @@ export function showAdd(content: HTMLElement | null): void {
             </button>
         </form>
     </section>
-    `;
+`;
 
-    setupRateSelects();
+    setupRateSelects(currencies);
 }
