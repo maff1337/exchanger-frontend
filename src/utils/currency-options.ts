@@ -1,6 +1,6 @@
-import { currencies } from "../data/data.js";
+import type { Currency } from "../types.js";
 
-export function createCurrencyOptions(): string {
+export function createCurrencyOptions(currencies: Currency[]): string {
     return currencies.map(
         (currency) => `
         <option value="${currency.id}">
