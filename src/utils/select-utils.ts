@@ -1,4 +1,7 @@
-export function setupRateSelects(): void {
+import type { Currency } from "../types.js";
+import { addCurrency, addRate } from "./api-requests.js";
+
+export function setupRateSelects(currencies: Currency[]): void {
     const baseSelect = document.querySelector<HTMLSelectElement>("#from-currency");
     const targetSelect = document.querySelector<HTMLSelectElement>("#to-currency");
 
@@ -31,6 +34,55 @@ export function setupRateSelects(): void {
     targetSelect.addEventListener("change", updateOptions);
 
     updateOptions();
+
+    const addCurrencyForm = document.querySelector<HTMLFormElement>("#add-currency-form");
+    const addRateForm = document.querySelector<HTMLFormElement>("#add-rate-form")
+
+    if (addCurrencyForm === null || addRateForm == null) {
+        throw new Error("Cannot find add forms");
+    }
+
+    addCurrencyForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(addCurrencyForm);
+
+        const code = String(formData.get("code") ?? "");
+        const name = String(formData.get("name") ?? "");
+        const sign = String(formData.get("sign") ?? "");
+
+        try {
+            await addCurrency(code, name, sign);
+            
+            addCurrencyForm.reset();
+        } catch(error) {
+            console.error("Failed to add currency:", error);    
+        }
+
+    })
+
+    addRateForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(addRateForm);
+
+
+        const baseCurrencyId = String(formData.get("baseCurrency") ?? "");
+        const targetCurrencyId = String(formData.get("targetCurrency") ?? "");
+        const rate = String(formData.get("rate") ?? "");
+
+        const baseCurrency = currencies.find(item => String(item.id) == baseCurrencyId)!.code;
+        const targetCurrency = currencies.find(item => String(item.id) === targetCurrencyId)!.code;
+
+        try {
+            await addRate(baseCurrency, targetCurrency, rate);
+
+            addRateForm.reset();
+        } catch (error) {
+            console.error("Failed to add rate:", error);
+        }
+    })
+    
 }
 
 
@@ -60,4 +112,6 @@ export function setupConverterSelects(fromSelect: HTMLSelectElement, toSelect: H
 
     fromSelect.addEventListener("change", handleFromChange);
     toSelect.addEventListener("change", handeToChange);
+
+
 }
