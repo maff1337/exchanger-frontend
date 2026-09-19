@@ -11,3 +11,5 @@ export interface Rate {
     targetCurrency: Currency;
     rate: number;
 }
+
+export type TabName = "currencies" | "rates" | "add" | "convert";

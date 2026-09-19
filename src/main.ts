@@ -2,6 +2,7 @@ import { showAdd } from "./tabs/add.js";
 import { showConverter } from "./tabs/converter.js";
 import { showCurrencies } from "./tabs/currencies.js";
 import { showRates } from "./tabs/rates.js";
+import type { TabName } from "./types.js";
 
 type TabName = "currencies" | "rates" | "add" | "convert";
 
