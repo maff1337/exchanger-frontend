@@ -1,19 +1,36 @@
-import { currencies } from "../data/data.js";
+import { getCurrencies } from "../utils/api-requests.js";
 
-export function showCurrencies(content: HTMLElement | null): void {
+
+export async function showCurrencies(content: HTMLElement | null): Promise<void> {
     if (content === null) {
         throw new Error("Content element not found");
     }
 
+    const currencies = await getCurrencies();
+    
+
     content.innerHTML = `
-    <h1>Currencies</h1>
-    ${currencies.map(
-        (currency) => `
-        <p>
-            ${currency.code} - ${currency.name} - ${currency.sign}
-        </p>
-        `
-    ).join("")
-    }
+    <div class="currency-table">
+        <table>
+            <thead>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Sign</th>
+            </thead>
+            <tbody>
+                ${currencies.map(
+                    (currency) => `
+                    <tr>
+                        <td>${currency.code}</td>
+                        <td>${currency.name}</td>
+                        <td>${currency.sign}</td>
+                    </tr>
+                    `
+                ).join("")
+                }
+            </tbody>
+        </table>
+    </div>
     `;
+    
 }
