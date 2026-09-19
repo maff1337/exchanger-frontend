@@ -1,18 +1,126 @@
-import { rates } from "../data/data.js";
+import type { Rate } from "../types.js";
+import { getRates, patchRate } from "../utils/api-requests.js";
 
-export function showRates(content: HTMLElement | null): void {
+
+export async function showRates(content: HTMLElement | null): Promise<void> {
     if (content === null) {
         throw new Error("Content element not found");
     }
 
+    const rates = await getRates();
+
+
     content.innerHTML = `
-    <h1>Rates</h1>
-    ${rates.map(
-        (rate) => `
-        <p>
-            ${rate.baseCurrency.code} - ${rate.targetCurrency.code} - ${rate.rate}
-        </p>
-        `
-    ).join("")}
-    `;
+    <div class="rates-table">
+        <table>
+            <thead>
+                <th>From</th>
+                <th>To</th>
+                <th>Rate</th>
+            </thead>
+            <tbody>
+${rates
+    .map(
+        (rate, index) => `
+                    <tr>
+                        <td>${rate.baseCurrency.code}</td>
+                        <td>${rate.targetCurrency.code}</td>
+                        <td>
+                            <div class="rate-edit">
+                                <input
+                                    class="rate-input"
+                                    type="number"
+                                    step="any"
+                                    min="0"
+                                    value="${rate.rate}"
+                                    data-index="${index}"
+                                >
+                                <button
+                                    type="button"
+                                    class="rate-save-btn"
+                                    data-index="${index}"
+                                    disabled
+                                >
+                                    Save
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+`
+    )
+    .join("")}
+            </tbody>
+        </table>
+    </div>
+`;
+
+    setupRatesTable(rates);
+}
+
+function setupRatesTable(rates: Rate[]): void {
+    const rows = document.querySelectorAll<HTMLElement>(".rate-edit");
+
+    rows.forEach((row) => {
+        const input = row.querySelector<HTMLInputElement>(".rate-input");
+        const button = row.querySelector<HTMLButtonElement>(".rate-save-btn");
+
+        if (input === null || button === null) {
+            return;
+        }
+
+        const index = Number(input.dataset.index);
+        const rate = rates[index];
+
+        if (rate === undefined) {
+            return;
+        }
+
+        input.addEventListener("input", () => {
+            const value = Number(input.value);
+            const isValid = input.value !== "" && !Number.isNaN(value) && value >= 0;
+            const isChanged = isValid && value !== rate.rate;
+
+            button.disabled = !isChanged;
+        });
+
+        button.addEventListener("click", () => {
+            const value = Number(input.value);
+
+            if (Number.isNaN(value) || value < 0) {
+                input.value = String(rate.rate);
+                button.disabled = true;
+                return;
+            }
+
+            void saveRate(rate, value, input, button);
+        });
+    });
+}
+
+async function saveRate(
+    rate: Rate,
+    value: number,
+    input: HTMLInputElement,
+    button: HTMLButtonElement
+): Promise<void> {
+    button.disabled = true;
+    const originalLabel = button.textContent;
+    button.textContent = "Saving...";
+
+    try {
+        const updateRate = await patchRate(
+            `${rate.baseCurrency.code.toUpperCase()}${rate.targetCurrency.code.toUpperCase()}`,
+            value,
+        )
+
+        rate.rate = value;
+
+        input.classList.remove("rate-input--saved");
+
+        void input.offsetWidth;
+
+        input.classList.add("rate-input--saved");
+    } finally {
+        button.textContent = originalLabel;
+    }
 }
