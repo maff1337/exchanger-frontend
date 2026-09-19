@@ -4,7 +4,6 @@
   "description": "Frontend for exchanger",
   "license": "MIT",
   "author": "maff1337",
-  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
