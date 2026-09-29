@@ -1,14 +1,22 @@
 import type { Rate } from "../types.js";
 import { getRates, patchRate } from "../utils/api-requests.js";
-
+import { handleApiError } from "../utils/handle-api-error.js";
+import { showToast } from "../utils/toast.js";
 
 export async function showRates(content: HTMLElement | null): Promise<void> {
     if (content === null) {
         throw new Error("Content element not found");
     }
 
-    const rates = await getRates();
+    let rates: Rate[];
 
+    try {
+        rates = await getRates();
+    } catch (error) {
+        handleApiError(error, "Cannot load rates");
+        content.innerHTML = `<p class="load-error">Cannot load rates. Please, restart the page.</p>`;
+        return;
+    }
 
     content.innerHTML = `
     <div class="rates-table">
@@ -108,18 +116,22 @@ async function saveRate(
     button.textContent = "Saving...";
 
     try {
-        const updateRate = await patchRate(
+        await patchRate(
             `${rate.baseCurrency.code.toUpperCase()}${rate.targetCurrency.code.toUpperCase()}`,
-            value,
-        )
+            value
+        );
 
         rate.rate = value;
 
         input.classList.remove("rate-input--saved");
 
         void input.offsetWidth;
-
         input.classList.add("rate-input--saved");
+
+        showToast("Exchange rate was updated successfully", "success");
+    } catch (error) {
+        handleApiError(error);
+        button.disabled = false;
     } finally {
         button.textContent = originalLabel;
     }
