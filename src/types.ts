@@ -13,3 +13,12 @@ export interface Rate {
 }
 
 export type TabName = "currencies" | "rates" | "add" | "convert";
+
+
+export interface Converted {
+    from: string,
+    to: string,
+    rate: number,
+    amount: number,
+    convertedAmount: number,
+}
