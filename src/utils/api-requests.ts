@@ -13,7 +13,7 @@ export class ApiError extends Error {
 }
 
 export async function getCurrencies(): Promise<Currency[]> {
-    const response = await fetch("http://localhost:5212/currencies");
+    const response = await fetch("/currencies");
 
     if (!response.ok) {
         const body = await response.json()
@@ -25,7 +25,7 @@ export async function getCurrencies(): Promise<Currency[]> {
 }
 
 export async function getRates(): Promise<Rate[]> {
-    const response = await fetch("http://localhost:5212/exchangeRates");
+    const response = await fetch("/exchangeRates");
 
     if (!response.ok) {
         const body = await response.json()
@@ -42,7 +42,7 @@ export async function patchRate(pair: string, rate: number): Promise<void> {
     });
 
     const response = await fetch(
-        `http://localhost:5212/exchangeRate/${pair}`,
+        `/exchangeRate/${pair}`,
         {
             method: "PATCH",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -69,7 +69,7 @@ export async function addCurrency(
         sign,
     });
 
-    const response = await fetch(`http://localhost:5212/currencies`, {
+    const response = await fetch(`/currencies`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body,
@@ -95,7 +95,7 @@ export async function addRate(
         rate,
     });
 
-    const response = await fetch(`http://localhost:5212/exchangeRates`, {
+    const response = await fetch(`/exchangeRates`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body,
@@ -121,7 +121,7 @@ export async function convert(
         amount,
     });
 
-    const response = await fetch(`http://localhost:5212/exchange?${params}`);
+    const response = await fetch(`/exchange?${params}`);
 
     if (!response.ok) {
         const body = await response.json()
