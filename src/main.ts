@@ -36,15 +36,17 @@ tabs.forEach((tab) => {
             return;
         }
 
-        tabs.forEach((item) => {
-            item.classList.remove("active");
-        });
-
-        tab.classList.add("active");
-
-        showTab(tabName);
+        activateTab(tabName);
     });
 });
+
+function activateTab(tabName: TabName): void {
+    tabs.forEach((tab) => {
+        tab.classList.toggle("active", tab.dataset.tab === tabName);
+    });
+
+    showTab(tabName);
+}
 
 function isTabName(value: string | undefined): value is TabName {
     return (
@@ -55,4 +57,4 @@ function isTabName(value: string | undefined): value is TabName {
     );
 }
 
-showTab("currencies");
+activateTab("currencies");
