@@ -13,7 +13,7 @@ export class ApiError extends Error {
 }
 
 export async function getCurrencies(): Promise<Currency[]> {
-    const response = await fetch("/currencies");
+    const response = await fetch("http://localhost:5212/currencies");
 
     if (!response.ok) {
         const body = await response.json()
@@ -25,7 +25,7 @@ export async function getCurrencies(): Promise<Currency[]> {
 }
 
 export async function getRates(): Promise<Rate[]> {
-    const response = await fetch("/exchangeRates");
+    const response = await fetch("http://localhost:5212/exchangeRates");
 
     if (!response.ok) {
         const body = await response.json()
@@ -42,7 +42,7 @@ export async function patchRate(pair: string, rate: number): Promise<void> {
     });
 
     const response = await fetch(
-        `/exchangeRate/${pair}`,
+        `http://localhost:5212/exchangeRate/${pair}`,
         {
             method: "PATCH",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -69,7 +69,7 @@ export async function addCurrency(
         sign,
     });
 
-    const response = await fetch(`/currencies`, {
+    const response = await fetch(`http://localhost:5212/currencies`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body,
@@ -90,12 +90,12 @@ export async function addRate(
     rate: string
 ): Promise<Rate> {
     const body = new URLSearchParams({
-        baseCurrency,
-        targetCurrency,
-        rate,
+        baseCurrencyCode: baseCurrency,
+        targetCurrencyCode: targetCurrency,
+        rate: rate,
     });
 
-    const response = await fetch(`/exchangeRates`, {
+    const response = await fetch(`http://localhost:5212/exchangeRates`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body,
@@ -121,7 +121,7 @@ export async function convert(
         amount,
     });
 
-    const response = await fetch(`/exchange?${params}`);
+    const response = await fetch(`http://localhost:5212/exchange?${params}`);
 
     if (!response.ok) {
         const body = await response.json()
