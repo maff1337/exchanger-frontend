@@ -1,47 +1,44 @@
+
+### `exchanger-frontend`
+
+```markdown
 # Exchanger Frontend
-
-Frontend for a currency exchange application.
-
-## Tech Stack
-
-* HTML
-* CSS
-* TypeScript
-* TypeScript Compiler (`tsc`)
-
-## Requirements
-
-* Node.js
-* npm
-
-## Installation
-
-```bash
-git clone https://github.com/maff1337/exchanger-frontend.git
-cd exchanger-frontend
-npm install
 ```
 
-## Build
+Frontend for the [Exchanger](https://github.com/maff1337/exchanger) REST API.
 
-Compile TypeScript:
+## Stack
+
+- HTML
+- CSS
+- TypeScript
+
+No frontend framework or bundler is used.
+
+## Features
+
+- View and add currencies
+- View and edit exchange rates
+- Currency conversion
+
+## Run
 
 ```bash
+npm install
 npm run build
 ```
 
-Compiled JavaScript files are generated in the `dist/` directory.
-
-## Development
-
-Start TypeScript in watch mode:
+For development with automatic TypeScript compilation:
 
 ```bash
 npm run watch
 ```
 
-The project does not use a frontend framework or bundler.
+The frontend expects the API at http://localhost:5212.
 
-## License
+License - MIT
 
-This project is licensed under the MIT License.
+For local test use python server:
+```bash
+python server.py
+```
